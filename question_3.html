@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafe Search</title>
+</head>
+<body>
+
+    <h1>Cafe Search</h1>
+
+    <label for="searchBox">Search Cafe:</label>
+    <input type="text" id="searchBox" oninput="searchCafes()">
+    
+    <table id="cafeTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody id="cafeList"></tbody>
+    </table>
+
+    <script>
+        let cafes = []; // To store the original list of cafes
+        let cafeLocations = {}; // To store cafe locations
+
+        // Fetch cafes and places on page load
+        window.onload = function () {
+            fetchPlaces();
+        };
+
+        // Function to fetch cafes from the API
+        function fetchCafes() {
+            fetch('https://raw.githubusercontent.com/debojyoti/places-fake-rest-api/master/cafes.json')
+                .then(response => response.json())
+                .then(data => {
+                    cafes = data.cafes;
+                    displayCafes(cafes);
+                })
+                .catch(error => console.error('Error fetching cafes:', error));
+        }
+
+        // Function to fetch places from the API
+        function fetchPlaces() {
+            fetch('https://raw.githubusercontent.com/debojyoti/places-fake-rest-api/master/places.json')
+                .then(response => response.json())
+                .then(data => {
+                    cafeLocations = data.places.reduce((acc, place) => {
+                        acc[place.id] = `${place.street_no} ${place.locality}, ${place.postal_code}`;
+                        return acc;
+                    }, {});
+                    fetchCafes(); // Fetch cafes after places are fetched
+                })
+                .catch(error => console.error('Error fetching places:', error));
+        }
+
+        // Display cafes in the table
+        function displayCafes(filteredCafes) {
+            const cafeList = document.getElementById('cafeList');
+            cafeList.innerHTML = '';
+
+            filteredCafes.forEach(cafe => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${cafe.name}</td>
+                    <td>${getCafeLocation(cafe.location_id)}</td>
+                `;
+                cafeList.appendChild(tr);
+            });
+        }
+
+        // Get the location for a given cafe
+        function getCafeLocation(locationId) {
+            return cafeLocations[locationId] || 'N/A';
+        }
+
+        // Search cafes based on user input
+        function searchCafes() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const filteredCafes = cafes.filter(cafe => cafe.name.toLowerCase().includes(searchTerm));
+            displayCafes(filteredCafes);
+        }
+
+    </script>
+
+</body>
+</html>

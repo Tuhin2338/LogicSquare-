@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Mark Sheets</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .pass {
+            color: green;
+        }
+
+        .fail {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Student Mark Sheets</h2>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Roll</th>
+        <th>Math</th>
+        <th>English</th>
+        <th>Chemistry</th>
+        <th>Computer</th>
+        <th>Total Marks</th>
+        <th>Status</th>
+    </tr>
+    <!-- JavaScript will populate this table -->
+</table>
+
+<script>
+  
+    const students = [
+        { name: "Dhishan Debnath", Roll: 1 },
+        { name: "Animesh Gupta", Roll: 2 },
+        { name: "Tapas Sen", Roll: 3 },
+        { name: "Misti Dutta", Roll: 4 },
+        { name: "Chini Misra", Roll: 5 }
+    ];
+
+    const Details = [
+        { Roll: 5, subjects: { math: 35, english: 56, chemistry: 76, computer: 68 } },
+        { Roll: 3, subjects: { math: 33, chemistry: 12, computer: 50, english: 35 } },
+        { Roll: 1, subjects: { math: 55, english: 75, chemistry: 76, computer: 94 } },
+        { Roll: 4, subjects: { english: 12, chemistry: 85, computer: 68, math: 45 } },
+        { Roll: 2, subjects: { math: 55, english: 56, computer: 48, chemistry: 12 } }
+    ];
+
+    function generateStudentMarkSheets(students, details) {
+        return students.map(student => {
+            const studentDetails = details.find(detail => detail.Roll === student.Roll);
+            const marks = studentDetails.subjects;
+            const totalMarks = Object.values(marks).reduce((sum, mark) => sum + mark, 0);
+            const status = totalMarks >= 200 ? 'pass' : 'fail';
+
+            return {
+                ...student,
+                math: marks.math || 0,
+                english: marks.english || 0,
+                chemistry: marks.chemistry || 0,
+                computer: marks.computer || 0,
+                total: totalMarks,
+                status
+            };
+        });
+    }
+
+    const studentsMarkSheets = generateStudentMarkSheets(students, Details);
+    const table = document.querySelector('table');
+
+    studentsMarkSheets.forEach(student => {
+        const row = table.insertRow();
+        const keys = ['name', 'Roll', 'math', 'english', 'chemistry', 'computer', 'total', 'status'];
+
+        keys.forEach(key => {
+            const cell = row.insertCell();
+            cell.textContent = student[key];
+
+            if (key === 'status') {
+                cell.className = student[key] === 'pass' ? 'pass' : 'fail';
+            }
+        });
+    });
+</script>
+
+
+
+</body>
+</html>
